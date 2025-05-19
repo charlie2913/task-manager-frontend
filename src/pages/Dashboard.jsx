@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     getTasks,
     createTask,
@@ -20,6 +20,7 @@ function Dashboard() {
     const [editingTask, setEditingTask] = useState(null);
 
     const { logout } = useAuth();
+    const headingRef = useRef(null);
 
     const loadTasks = async () => {
         const filters = {};
@@ -59,6 +60,12 @@ function Dashboard() {
         setDescription(task.description || '');
         setDueDate(task.dueDate ? task.dueDate.slice(0, 10) : '');
         setStatus(task.status);
+        headingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        headingRef.current?.classList.add(styles.headingHighlight);
+        setTimeout(() => {
+            headingRef.current?.classList.remove(styles.headingHighlight);
+        }, 1000);
     };
 
     const handleUpdate = async (id, updates) => {
@@ -79,7 +86,9 @@ function Dashboard() {
         <div className={styles.container}>
             <div className={styles.inner}>
                 <button onClick={logout} className={styles.logout}>Salir</button>
-                <h2>{editingTask ? 'Editar tarea' : 'Crear nueva tarea'}</h2>
+                <h2 ref={headingRef} className={editingTask ? styles.headingHighlight : ''}>
+                    {editingTask ? 'Editar tarea' : 'Crear nueva tarea'}
+                </h2>
                 <form onSubmit={handleSubmit}>
                     <input
                         className={styles.input}
@@ -109,9 +118,28 @@ function Dashboard() {
                         <option value="en progreso">En progreso</option>
                         <option value="completada">Completada</option>
                     </select>
+
+                    {/* Botón de Crear/Actualizar */}
                     <button className={styles.button} type="submit">
                         {editingTask ? 'Actualizar' : 'Crear'}
                     </button>
+
+                    {/* Botón de Cancelar Edición */}
+                    {editingTask && (
+                        <button
+                            type="button"
+                            className={styles.cancelButton}
+                            onClick={() => {
+                                setEditingTask(null);
+                                setTitle('');
+                                setDescription('');
+                                setDueDate('');
+                                setStatus('pendiente');
+                            }}
+                        >
+                            Cancelar edición
+                        </button>
+                    )}
                 </form>
 
                 <div className={styles.filters}>
@@ -147,5 +175,4 @@ function Dashboard() {
         </div>
     );
 }
-
 export default Dashboard;

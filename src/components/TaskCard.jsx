@@ -24,15 +24,14 @@ function TaskCard({ task, onUpdate, onDelete, onEdit }) {
                         Completar
                     </button>
                 )}
-
                 <button className={styles.button} onClick={() => onEdit(task)}>
                     Editar
                 </button>
-
                 <button className={styles.button} onClick={() => onDelete(task._id)}>
                     Eliminar
                 </button>
             </div>
+
         </div>
     );
 }
